@@ -5,16 +5,16 @@ def detect_hand(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     
     # Apply Gaussian blur to reduce noise
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    blurred = cv2.GaussianBlur(gray, (7,7), 2)
     
     # Thresholding to create binary image
     _, thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     
-    # Debug: Display thresholded image
-    cv2.imshow('Thresholded Image', thresh)
-    
     # Find contours
     contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # Debug: Display thresholded image
+    cv2.imshow('Thresholded Image', thresh)
     
     # Filter contours to find potential hands
     potential_hands = []
@@ -22,7 +22,7 @@ def detect_hand(frame):
         area = cv2.contourArea(contour)
         
         # Filter based on area
-        if area < 1000 or area > 10000:  # Adjust area threshold as needed
+        if area < 10000 or area > 100000:  # Adjust area threshold as needed
             continue
         
         # Calculate convex hull to estimate convexity
@@ -33,7 +33,6 @@ def detect_hand(frame):
         if hull_area == 0:
             continue
         
-        # Calculate solidity (convexity)
         solidity = float(area) / hull_area
         
         # Filter based on solidity (convexity)
@@ -52,9 +51,6 @@ def detect_hand(frame):
         
         # If all criteria are met, it's a potential hand
         potential_hands.append((x, y, w, h))
-    
-    # Draw contours of potential hands on original frame
-    cv2.drawContours(frame, contours, -1, (0, 0, 255), 2)  # Draw all contours in red for debugging
     
     # Debug: Display processed frame with bounding boxes
     cv2.imshow('Processed Frame', frame)
