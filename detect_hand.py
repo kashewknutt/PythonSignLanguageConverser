@@ -6,10 +6,10 @@ def detect_hand(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     
     # Apply Gaussian blur to reduce noise
-    blurred = cv2.GaussianBlur(gray, (7, 7), 2)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 2)
     
     # Thresholding to create binary image
-    _, thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    _, thresh = cv2.threshold(blurred, 50, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     
     # Find contours
     contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -23,7 +23,7 @@ def detect_hand(frame):
         area = cv2.contourArea(contour)
         
         # Filter based on area
-        if area < 10000 or area > 100000:  # Adjust area threshold as needed
+        if area < 1000 or area > 10000:  # Adjust area threshold as needed
             continue
         
         # Calculate convex hull to estimate convexity
